@@ -1,18 +1,21 @@
 import gym
+import pybullet_envs
 import numpy as np
 
 from ppo.agent import Agent
 
 
 if __name__ == '__main__':
-    env = gym.make('CartPole-v0')
+    env = gym.make('AntBulletEnv-v0')
 
-    learn_interval = 20
-    batch_size = 5
-    n_epochs = 10
+    learn_interval = 100
+    batch_size = 5000
+    n_epochs = 1000
     learning_rate = 0.0003
-    agent = Agent(n_actions=env.action_space.n, batch_size=batch_size,
-                  learning_rate=learning_rate, n_epochs=n_epochs, input_dims=env.observation_space.shape)
+    observation_space = env.observation_space.shape[0]
+    action_space = env.action_space.shape[0]
+    agent = Agent(n_actions=action_space, batch_size=batch_size,
+                  learning_rate=learning_rate, n_epochs=n_epochs, input_dims=observation_space)
     n_games = 300
 
     best_score = env.reward_range[0]

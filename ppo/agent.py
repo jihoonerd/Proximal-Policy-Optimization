@@ -29,9 +29,9 @@ class Agent:
         value = self.critic(state)
         action = dist.sample()
 
-        prob = T.squeeze(dist.log_prob(action)).item()
-        action = T.squeeze(action).item()
-        value = T.squeeze(value).item()
+        prob = T.squeeze(dist.log_prob(action)).detach().numpy()
+        action = T.squeeze(action).detach().numpy()
+        value = T.squeeze(value).detach().numpy()
 
         return action, prob, value
 
@@ -68,9 +68,9 @@ class Agent:
 
                 new_probs = dist.log_prob(actions)
                 prob_ratio = new_probs.exp() / old_probs.exp()
-                weighted_probs = advantage[idxs] * prob_ratio
+                weighted_probs = advantage[idxs] * prob_ratio.mean(dim=1)
                 weighted_clipped_probs = T.clamp(
-                    prob_ratio, 1-self.policy_clip, 1+self.policy_clip) * advantage[idxs]
+                    prob_ratio, 1-self.policy_clip, 1+self.policy_clip).mean(dim=1) * advantage[idxs]
 
                 actor_loss = -T.min(weighted_probs, weighted_clipped_probs)
 
